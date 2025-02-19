@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Feedback</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Sistema de Feedback de Usuários</h1>
+
+      <!-- Formulário de Avaliação -->
+      <div class="feedback-form">
+        <h2>Deixe seu Feedback</h2>
+        <form id="feedback-form">
+          <label for="rating">Avaliação (1 a 5 estrelas):</label>
+          <div id="rating" class="star-rating">
+            <input type="radio" name="rating" id="star1" value="1" />
+            <label for="star1">&#9733;</label>
+            <input type="radio" name="rating" id="star2" value="2" />
+            <label for="star2">&#9733;</label>
+            <input type="radio" name="rating" id="star3" value="3" />
+            <label for="star3">&#9733;</label>
+            <input type="radio" name="rating" id="star4" value="4" />
+            <label for="star4">&#9733;</label>
+            <input type="radio" name="rating" id="star5" value="5" />
+            <label for="star5">&#9733;</label>
+          </div>
+          <label for="comment">Comentário:</label>
+          <textarea
+            id="comment"
+            rows="4"
+            placeholder="Escreva seu comentário"
+          ></textarea>
+          <button type="submit">Enviar Feedback</button>
+        </form>
+      </div>
+
+      <!-- Exibição de Feedbacks -->
+      <div class="feedbacks-list">
+        <h2>Feedbacks dos Usuários</h2>
+        <div id="feedbacks-container">
+          <!-- Feedbacks serão listados aqui -->
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

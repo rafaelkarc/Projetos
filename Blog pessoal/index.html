@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog - CRUD</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="blog-container">
+      <h1>Meu Blog</h1>
+
+      <!-- Formulário para criar um novo post -->
+      <div class="create-post">
+        <h2>Criar Novo Post</h2>
+        <form id="create-post-form">
+          <input
+            type="text"
+            id="post-title"
+            placeholder="Título do post"
+            required
+          />
+          <textarea
+            id="post-content"
+            placeholder="Conteúdo do post"
+            required
+          ></textarea>
+          <button type="submit">Criar Post</button>
+        </form>
+      </div>
+
+      <!-- Lista de posts -->
+      <div id="posts-list">
+        <h2>Posts</h2>
+        <!-- Os posts serão listados aqui -->
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

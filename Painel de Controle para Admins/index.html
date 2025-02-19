@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel de Controle - Admin</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <!-- Tela de Login -->
+    <div id="login-container" class="login-container">
+      <h1>Login - Admin</h1>
+      <form id="login-form">
+        <label for="username">Usuário:</label>
+        <input
+          type="text"
+          id="username"
+          placeholder="Digite seu usuário"
+          required
+        />
+        <label for="password">Senha:</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Digite sua senha"
+          required
+        />
+        <button type="submit">Entrar</button>
+      </form>
+      <p id="login-error" class="error-message"></p>
+    </div>
+
+    <!-- Painel de Controle -->
+    <div
+      id="dashboard-container"
+      class="dashboard-container"
+      style="display: none"
+    >
+      <header>
+        <h1>Painel de Controle - Admin</h1>
+        <button id="logout-btn">Sair</button>
+      </header>
+
+      <div class="statistics">
+        <h2>Estatísticas de Performance</h2>
+        <div class="charts-container">
+          <canvas id="salesChart"></canvas>
+          <canvas id="usersChart"></canvas>
+        </div>
+      </div>
+
+      <div class="data-table">
+        <h2>Usuários Registrados</h2>
+        <table id="user-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dados de usuários serão inseridos aqui -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
