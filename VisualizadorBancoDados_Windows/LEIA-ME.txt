@@ -1,0 +1,75 @@
+================================================================================
+    VISUALIZADOR DO BANCO DE DADOS - VERSÃO WINDOWS
+================================================================================
+
+COMO USAR:
+
+1. PRIMEIRO: Instale Python (se não tiver)
+   - Acesse: https://www.python.org/downloads/
+   - Baixe Python 3.8 ou superior
+   - IMPORTANTE: Marque "Add Python to PATH" durante a instalação
+   - Clique em "Install Now"
+
+2. DEPOIS: Duplo clique em "VisualizadorBancoDados.bat"
+   - O script instalará as dependências automaticamente
+   - Abrirá a aplicação em http://localhost:5003/
+
+3. PRONTO! Use a aplicação
+
+================================================================================
+FUNCIONALIDADES:
+================================================================================
+
+✅ Cálculo de VNA (Valor Nominal Atualizado)
+✅ Cálculo de PU PAR
+✅ Cálculo de PU Operação
+✅ Filtros Estatísticos
+✅ Identificador de Ativos
+✅ Visualizador do Banco de Dados
+✅ Edição de ativos
+✅ Exportação para Excel
+✅ Banco de dados SQLite integrado
+
+================================================================================
+ACESSAR:
+================================================================================
+
+- Interface Principal: http://localhost:5003/
+- Visualizador do Banco: http://localhost:5003/database
+- Teste: http://localhost:5003/test
+
+================================================================================
+TROUBLESHOOTING:
+================================================================================
+
+PROBLEMA: "Python não está instalado"
+SOLUÇÃO: Instale Python de https://www.python.org/downloads/
+
+PROBLEMA: "Porta 5003 já está em uso"
+SOLUÇÃO: Aguarde 30 segundos ou reinicie seu computador
+
+PROBLEMA: Navegador não abre
+SOLUÇÃO: Abra manualmente em http://localhost:5003/
+
+PROBLEMA: Erro ao instalar dependências
+SOLUÇÃO: Abra Command Prompt como administrador e execute:
+  pip install flask flask-cors openpyxl requests
+
+================================================================================
+ARQUIVOS INCLUSOS:
+================================================================================
+
+VisualizadorBancoDados.bat  - Clique aqui para iniciar
+app.py                      - Aplicação Flask
+src/                        - Módulos Python
+templates/                  - Arquivos HTML
+static/                     - CSS e JavaScript
+database.db                 - Banco de dados SQLite
+
+================================================================================
+VERSÃO: 1.0
+DATA: Janeiro 2026
+STATUS: Pronto para Produção
+
+Aproveite! 🚀
+================================================================================

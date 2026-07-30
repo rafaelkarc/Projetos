@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador do Banco de Dados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .main-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1400px;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        
+        .stats-card.active {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .stats-card h3 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stats-card p {
+            color: #666;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .card-blue { border-left: 5px solid #007bff; }
+        .card-green { border-left: 5px solid #28a745; }
+        .card-cyan { border-left: 5px solid #17a2b8; }
+        .card-orange { border-left: 5px solid #fd7e14; }
+        .card-gray { border-left: 5px solid #6c757d; }
+        .card-dark { border-left: 5px solid #343a40; }
+        
+        .icon-blue { color: #007bff; }
+        .icon-green { color: #28a745; }
+        .icon-cyan { color: #17a2b8; }
+        .icon-orange { color: #fd7e14; }
+        .icon-gray { color: #6c757d; }
+        .icon-dark { color: #343a40; }
+        
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .table-header h4 {
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .btn-action {
+            padding: 5px 10px;
+            margin: 0 2px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-edit {
+            background: #ffc107;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #e0a800;
+        }
+        
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #c82333;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-ativo {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inativo {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .table {
+            margin: 0;
+        }
+        
+        .table thead th {
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .table tbody tr:hover {
+            background: #f8f9ff;
+        }
+        
+        .btn-refresh {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-refresh:hover {
+            background: #0056b3;
+        }
+        
+        .btn-back {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-back:hover {
+            background: #5a6268;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .modal-close {
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+        
+        .modal-close:hover {
+            color: #000;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .btn-save {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-save:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <div class="header-section">
+                <h1><i class="fas fa-database"></i> Visualizador do Banco de Dados</h1>
+                <p>Sistema de gerenciamento integrado de dados CRI/CRA</p>
+                <div style="margin-top: 20px;">
+                    <a href="/" class="btn-back"><i class="fas fa-arrow-left"></i> Voltar</a>
+                </div>
+            </div>
+            
+            <!-- Simulador de Investimento -->
+            <div class="simulator-container" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px; overflow: hidden;">
+                <div class="simulator-header" onclick="toggleSimulator()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                    <h3 style="margin: 0; font-size: 20px; font-weight: 600;"><i class="fas fa-chart-line"></i> Simulador de Investimento</h3>
+                    <button class="btn-toggle-simulator" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                
+                <div class="simulator-content" id="simulatorContent" style="padding: 24px;">
+                    <div class="row">
+                        <!-- Coluna 1: Entrada de Dados -->
+                        <div class="col-md-6">
+                            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                                <h4 style="color: #667eea; margin-top: 0; margin-bottom: 20px;"><i class="fas fa-edit"></i> Dados da Simulação</h4>
+                                
+                                <div class="form-group">
+                                    <label>Valor do Investimento (R$)</label>
+                                    <input type="number" id="simValor" class="form-control" placeholder="Ex: 100000" min="0" step="1000">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Selecionar Ativo</label>
+                                    <select id="simAtivo" class="form-control" onchange="carregarDadosAtivo()">
+                                        <option value="">Selecione um ativo...</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Taxa de Juros (% a.a.)</label>
+                                    <input type="number" id="simTaxa" class="form-control" placeholder="Ex: 10.5" step="0.01">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Indexador</label>
+                                    <select id="simIndexador" class="form-control">
+                                        <option value="IPCA">IPCA+</option>
+                                        <option value="CDI">CDI+</option>
+                                        <option value="PRE">Pré-fixado</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Prazo (meses)</label>
+                                    <input type="number" id="simPrazo" class="form-control" placeholder="Ex: 24" min="1" max="360">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Cenário IPCA/CDI</label>
+                                    <select id="simCenario" class="form-control">
+                                        <option value="otimista">Otimista (3% a.a.)</option>
+                                        <option value="moderado" selected>Moderado (4.5% a.a.)</option>
+                                        <option value="pessimista">Pessimista (6% a.a.)</option>
+                                        <option value="custom">Personalizado</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group" id="customIndexGroup" style="display: none;">
+                                    <label>Taxa do Indexador (% a.a.)</label>
+                                    <input type="number" id="simCustomIndex" class="form-control" placeholder="Ex: 5.0" step="0.01">
+                                </div>
+                                
+                                <button class="btn btn-primary btn-block" onclick="simularInvestimento()">
+                                    <i class="fas fa-calculator"></i> Calcular Rendimento
+                                </button>
+                                
+                                <button class="btn btn-secondary btn-block" onclick="limparSimulador()">
+                                    <i class="fas fa-eraser"></i> Limpar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Coluna 2: Resultados -->
+                        <div class="col-md-6">
+                            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                                <h4 style="color: #667eea; margin-top: 0; margin-bottom: 20px;"><i class="fas fa-chart-bar"></i> Resultados da Simulação</h4>
+                                
+                                <div id="resultadoSimulacao" style="display: none; background: white; padding: 20px; border-radius: 8px;">
+                                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                                        <span style="font-weight: 500; color: #555;">Valor Investido:</span>
+                                        <span style="font-weight: 600; color: #333;" id="resValorInicial">R$ 0,00</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                                        <span style="font-weight: 500; color: #555;">Prazo:</span>
+                                        <span style="font-weight: 600; color: #333;" id="resPrazo">0 meses</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                                        <span style="font-weight: 500; color: #555;">Taxa Total:</span>
+                                        <span style="font-weight: 600; color: #333;" id="resTaxaTotal">0% a.a.</span>
+                                    </div>
+                                    
+                                    <div style="height: 1px; background: #ddd; margin: 16px 0;"></div>
+                                    
+                                    <div style="background: #f8f9fa; margin: 0 -20px; padding: 16px 20px;">
+                                        <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+                                            <span style="font-weight: 500; color: #555;">Valor Final:</span>
+                                            <span style="font-weight: 600; color: #28a745; font-size: 18px;" id="resValorFinal">R$ 0,00</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                                        <span style="font-weight: 500; color: #555;">Rendimento Total:</span>
+                                        <span style="font-weight: 600; color: #28a745;" id="resRendimento">R$ 0,00</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+                                        <span style="font-weight: 500; color: #555;">Rentabilidade:</span>
+                                        <span style="font-weight: 600; color: #28a745;" id="resRentabilidade">0%</span>
+                                    </div>
+                                    
+                                    <div style="height: 1px; background: #ddd; margin: 16px 0;"></div>
+                                    
+                                    <div style="margin-top: 20px; padding: 16px; background: #f8f9fa; border-radius: 6px;">
+                                        <h5 style="margin: 0 0 12px 0; font-size: 14px; color: #667eea; font-weight: 600;">Composição do Rendimento:</h5>
+                                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; color: #555;">
+                                            <span>Juros:</span>
+                                            <span id="resJuros">R$ 0,00</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; color: #555;">
+                                            <span>Correção (Indexador):</span>
+                                            <span id="resCorrecao">R$ 0,00</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="margin-top: 24px; padding: 16px; background: white; border-radius: 6px;">
+                                        <canvas id="chartSimulacao" style="max-height: 250px;"></canvas>
+                                    </div>
+                                </div>
+                                
+                                <div id="resultadoPlaceholder" style="text-align: center; padding: 60px 20px; color: #999;">
+                                    <i class="fas fa-chart-line fa-3x" style="color: #ddd; margin-bottom: 16px;"></i>
+                                    <p style="margin: 0; font-size: 14px;">Preencha os dados e clique em "Calcular Rendimento" para ver os resultados.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cards de Estatísticas -->
+            <div class="row" id="statsContainer">
+                <div class="col-md-4 col-sm-6">
+                    <div class="stats-card card-blue" onclick="showTable('calculos_vna')">
+                        <i class="fas fa-chart-line fa-3x icon-blue"></i>
+                        <h3 id="stat-calculos-vna">0</h3>
+                        <p>Cálculos VNA</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="stats-card card-green" onclick="showTable('pu_par')">
+                        <i class="fas fa-calculator fa-3x icon-green"></i>
+                        <h3 id="stat-pu-par">0</h3>
+                        <p>PU PAR</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="stats-card card-cyan" onclick="showTable('pu_operacao')">
+                        <i class="fas fa-exchange-alt fa-3x icon-cyan"></i>
+                        <h3 id="stat-pu-operacao">0</h3>
+                        <p>PU Operação</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="stats-card card-orange" onclick="showTable('ativos')">
+                        <i class="fas fa-briefcase fa-3x icon-orange"></i>
+                        <h3 id="stat-ativos">0</h3>
+                        <p>Ativos</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="stats-card card-gray" onclick="showTable('filtros')">
+                        <i class="fas fa-filter fa-3x icon-gray"></i>
+                        <h3 id="stat-filtros">0</h3>
+                        <p>Filtros</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="stats-card card-dark" onclick="showTable('logs')">
+                        <i class="fas fa-database fa-3x icon-dark"></i>
+                        <h3>SQLite</h3>
+                        <p>Banco Ativo</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Container da Tabela -->
+            <div class="table-container" id="tableContainer" style="display: none;">
+                <div class="table-header">
+                    <h4 id="tableTitle">Dados</h4>
+                    <button class="btn-refresh" onclick="refreshCurrentTable()">
+                        <i class="fas fa-sync-alt"></i> Atualizar
+                    </button>
+                </div>
+                <div id="tableContent">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin fa-3x"></i>
+                        <p>Carregando dados...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para Edição de Ativos -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Ativo</h3>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label>Código IF</label>
+                    <input type="text" class="form-control" id="edit-codigo-if" required>
+                </div>
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" class="form-control" id="edit-nome" required>
+                </div>
+                <div class="form-group">
+                    <label>Emissor</label>
+                    <input type="text" class="form-control" id="edit-emissor" required>
+                </div>
+                <div class="form-group">
+                    <label>PU Emissão</label>
+                    <input type="number" step="0.01" class="form-control" id="edit-pu-emissao">
+                </div>
+                <div class="form-group">
+                    <label>Taxa (%)</label>
+                    <input type="number" step="0.01" class="form-control" id="edit-taxa">
+                </div>
+                <div class="form-group">
+                    <label>Indexador</label>
+                    <input type="text" class="form-control" id="edit-indexador">
+                </div>
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i> Salvar
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='database_viewer.js') }}"></script>
+</body>
+</html>
+

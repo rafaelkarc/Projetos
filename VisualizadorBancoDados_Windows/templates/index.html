@@ -1,0 +1,2180 @@
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora PU/IPCA Integrada</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='css/styles.css') }}"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="header-section">
+            <h1 class="text-center mb-4">
+              <i class="fas fa-calculator text-primary"></i>
+              Sistema Integrado PU/Ativos
+            </h1>
+            <p class="text-center text-muted">
+              Calculadora profissional para CRI e CRA com salvamento automático
+              em planilha Excel e Banco de Dados SQLite
+            </p>
+            <div class="text-center mt-3">
+              <a href="/database" class="btn btn-primary" target="_blank">
+                <i class="fas fa-database"></i> Visualizar Banco de Dados
+              </a>
+            </div>
+          </div>
+
+          <!-- Navegação por Abas -->
+          <ul
+            class="nav nav-tabs nav-justified mb-4"
+            id="calculatorTabs"
+            role="tablist"
+          >
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                id="vna-tab"
+                data-toggle="tab"
+                href="#vna"
+                role="tab"
+              >
+                <i class="fas fa-chart-line"></i> VNA
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="pu-par-tab"
+                data-toggle="tab"
+                href="#pu-par"
+                role="tab"
+              >
+                <i class="fas fa-percentage"></i> PU PAR
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="pu-operacao-tab"
+                data-toggle="tab"
+                href="#pu-operacao"
+                role="tab"
+              >
+                <i class="fas fa-exchange-alt"></i> PU Operação
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="filtros-tab"
+                data-toggle="tab"
+                href="#filtros"
+                role="tab"
+              >
+                <i class="fas fa-filter"></i> Filtros Estatísticos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="identificador-tab"
+                data-toggle="tab"
+                href="#identificador"
+                role="tab"
+              >
+                <i class="fas fa-search"></i> Identificador de Ativos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="cadastro-tab"
+                data-toggle="tab"
+                href="#cadastro"
+                role="tab"
+              >
+                <i class="fas fa-plus-circle"></i> Cadastro de Ativos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="juros-tab"
+                data-toggle="tab"
+                href="#juros"
+                role="tab"
+              >
+                <i class="fas fa-money-bill-wave"></i> Calculadora de Juros
+              </a>
+            </li>
+          </ul>
+
+          <!-- Status Global -->
+          <div id="statusGlobal" class="alert alert-info" style="display: none">
+            <div id="statusContent"></div>
+          </div>
+
+          <!-- Loading Spinner -->
+          <div id="loadingSpinner" class="text-center" style="display: none">
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Carregando...</span>
+            </div>
+            <p class="mt-2">Processando...</p>
+          </div>
+
+          <!-- Conteúdo das Abas -->
+          <div class="tab-content" id="calculatorTabContent">
+            <!-- Aba VNA -->
+            <div class="tab-pane fade show active" id="vna" role="tabpanel">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-chart-line text-primary"></i>
+                    Cálculo do Valor Nominal Atualizado (VNA)
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <form id="vnaForm">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="vne"
+                            >Valor Nominal de Emissão (VNE)
+                            <span class="text-danger">*</span></label
+                          >
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="vne"
+                            name="vne"
+                            step="0.01"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="ipcaEmissao"
+                            >Índice IPCA na Emissão
+                            <span class="text-danger">*</span></label
+                          >
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="ipcaEmissao"
+                            name="ipcaEmissao"
+                            step="0.01"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="ipcaAtual"
+                            >Índice IPCA Atual
+                            <span class="text-danger">*</span></label
+                          >
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="ipcaAtual"
+                            name="ipcaAtual"
+                            step="0.01"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calculator"></i>
+                        Calcular VNA
+                      </button>
+                    </div>
+                  </form>
+
+                  <!-- Área de Resultados VNA -->
+                  <div id="vnaResultados" class="mt-4" style="display: none">
+                    <div class="card bg-light">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-chart-bar text-success"></i>
+                          Resultados do Cálculo VNA
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="result-item">
+                              <label>VNA Calculado:</label>
+                              <div class="result-value" id="vnaCalculado">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="result-item">
+                              <label>Fator de Correção:</label>
+                              <div class="result-value" id="fatorCorrecao">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="result-item">
+                              <label>Data do Cálculo:</label>
+                              <div class="result-value" id="dataCalculoResult">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="result-item">
+                              <label>IPCA Atual (IBGE):</label>
+                              <div class="result-value" id="ipcaAtualResult">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aba PU PAR -->
+            <div class="tab-pane fade" id="pu-par" role="tabpanel">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-percentage text-primary"></i>
+                    Cálculo do PU PAR
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <form id="puParForm">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="vnaParInput"
+                            >VNA <span class="text-danger">*</span></label
+                          >
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="vnaParInput"
+                            name="vnaParInput"
+                            step="0.01"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="taxaJuros"
+                            >Taxa de Juros (% a.a.)
+                            <span class="text-danger">*</span></label
+                          >
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="taxaJuros"
+                            name="taxaJuros"
+                            step="0.01"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="diasUteis"
+                            >Dias Úteis desde o Último Pagamento
+                            <span class="text-danger">*</span></label
+                          >
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="diasUteis"
+                            name="diasUteis"
+                            min="0"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="baseCalculo"
+                            >Base de Cálculo
+                            <span class="text-danger">*</span></label
+                          >
+                          <select
+                            class="form-control"
+                            id="baseCalculo"
+                            name="baseCalculo"
+                            required
+                          >
+                            <option value="252" selected>
+                              252 dias (Padrão Brasil)
+                            </option>
+                            <option value="360">360 dias</option>
+                            <option value="365">365 dias</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-calculator"></i>
+                        Calcular PU PAR
+                      </button>
+                    </div>
+                  </form>
+
+                  <!-- Área de Resultados PU PAR -->
+                  <div id="puParResultados" class="mt-4" style="display: none">
+                    <div class="card bg-light">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-chart-bar text-success"></i>
+                          Resultados do Cálculo PU PAR
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="result-item">
+                              <label>PU PAR Calculado:</label>
+                              <div class="result-value" id="puParCalculado">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="result-item">
+                              <label>Data do Cálculo:</label>
+                              <div class="result-value" id="dataCalculoPuPar">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aba PU Operação MODIFICADA -->
+            <div class="tab-pane fade" id="pu-operacao" role="tabpanel">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-exchange-alt text-primary"></i>
+                    Cálculo do PU Operação
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <form id="puOperacaoForm">
+                    <!-- NOVA FUNCIONALIDADE: Campo Código IF -->
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="codigoIF">Código IF (Opcional)</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="codigoIF"
+                            name="codigoIF"
+                            placeholder="Ex: 14J0107228"
+                          />
+                          <small class="form-text text-muted">
+                            Informe o código IF para buscar automaticamente os
+                            dados do ativo
+                          </small>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div
+                          id="indicadorBusca"
+                          style="display: none"
+                          class="text-center mt-4"
+                        >
+                          <div
+                            class="spinner-border spinner-border-sm text-primary"
+                            role="status"
+                          >
+                            <span class="sr-only">Buscando...</span>
+                          </div>
+                          <small class="ml-2">Buscando dados do ativo...</small>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- NOVA FUNCIONALIDADE: Informações do Ativo Encontrado -->
+                    <div id="dadosAtivo" class="mb-3" style="display: none">
+                      <div class="alert alert-info">
+                        <h6>
+                          <i class="fas fa-info-circle"></i> Dados do Ativo
+                          Encontrado:
+                        </h6>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <strong>Nome:</strong> <span id="nomeAtivo">-</span
+                            ><br />
+                            <strong>PU Emissão:</strong>
+                            <span id="puEmissao">-</span>
+                          </div>
+                          <div class="col-md-6">
+                            <strong>Taxa:</strong> <span id="taxaAtivo">-</span
+                            ><br />
+                            <strong>Indexador:</strong>
+                            <span id="indexadorAtivo">-</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="taxaMercado"
+                            >Taxa de Mercado (% a.a.)
+                            <span class="text-danger">*</span></label
+                          >
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="taxaMercado"
+                            name="taxaMercado"
+                            step="0.01"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="baseCalculoOperacao"
+                            >Base de Cálculo
+                            <span class="text-danger">*</span></label
+                          >
+                          <select
+                            class="form-control"
+                            id="baseCalculoOperacao"
+                            name="baseCalculoOperacao"
+                            required
+                          >
+                            <option value="252" selected>
+                              252 dias (Padrão Brasil)
+                            </option>
+                            <option value="360">360 dias</option>
+                            <option value="365">365 dias</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="card mt-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-stream"></i>
+                          Fluxos de Pagamento
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div id="fluxosContainer">
+                          <div class="fluxo-item" data-fluxo="1">
+                            <div class="row">
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                  <label>Data</label>
+                                  <input
+                                    type="date"
+                                    class="form-control fluxo-data"
+                                    name="fluxoData1"
+                                  />
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                  <label
+                                    >Dias Úteis
+                                    <span class="text-danger">*</span></label
+                                  >
+                                  <input
+                                    type="number"
+                                    class="form-control fluxo-dias"
+                                    name="fluxoDias1"
+                                    id="fluxoDias1"
+                                    min="0"
+                                    required
+                                  />
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="form-group">
+                                  <label
+                                    >Valor
+                                    <span class="text-danger">*</span></label
+                                  >
+                                  <div class="input-group">
+                                    <input
+                                      type="number"
+                                      class="form-control fluxo-valor"
+                                      name="fluxoValor1"
+                                      id="fluxoValor1"
+                                      step="0.01"
+                                      required
+                                    />
+                                    <div class="input-group-append">
+                                      <button
+                                        type="button"
+                                        class="btn btn-outline-danger btn-remove-fluxo"
+                                        onclick="removerFluxo(1)"
+                                        style="display: none"
+                                      >
+                                        <i class="fas fa-trash"></i>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="text-center">
+                          <button
+                            type="button"
+                            class="btn btn-outline-primary"
+                            onclick="adicionarFluxo()"
+                          >
+                            <i class="fas fa-plus"></i>
+                            Adicionar Fluxo
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="text-center mt-3">
+                      <button type="submit" class="btn btn-warning btn-lg">
+                        <i class="fas fa-calculator"></i>
+                        Calcular PU Operação
+                      </button>
+                    </div>
+                  </form>
+
+                  <!-- Área de Resultados PU Operação MODIFICADA -->
+                  <div
+                    id="puOperacaoResultados"
+                    class="mt-4"
+                    style="display: none"
+                  >
+                    <div class="card bg-light">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-chart-bar text-success"></i>
+                          Resultados do Cálculo PU Operação
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="result-item">
+                              <label>PU Operação Calculado:</label>
+                              <div
+                                class="result-value"
+                                id="puOperacaoCalculado"
+                              >
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="result-item">
+                              <label>Data do Cálculo:</label>
+                              <div
+                                class="result-value"
+                                id="dataCalculoPuOperacao"
+                              >
+                                -
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- NOVA FUNCIONALIDADE: Informações do Ativo no Resultado -->
+                        <div
+                          id="infoAtivoResultado"
+                          class="mt-3"
+                          style="display: none"
+                        >
+                          <div class="card border-info">
+                            <div class="card-header bg-info text-white">
+                              <h6 class="mb-0">
+                                <i class="fas fa-info-circle"></i>
+                                Informações do Ativo Utilizado
+                              </h6>
+                            </div>
+                            <div class="card-body">
+                              <div class="row">
+                                <div class="col-md-6">
+                                  <strong>Nome:</strong>
+                                  <span id="nomeAtivoResultado">-</span><br />
+                                  <strong>Código IF:</strong>
+                                  <span id="codigoIFResultado">-</span><br />
+                                  <strong>PU Emissão:</strong>
+                                  <span id="puEmissaoResultado">-</span>
+                                </div>
+                                <div class="col-md-6">
+                                  <strong>Taxa do Ativo:</strong>
+                                  <span id="taxaAtivoResultado">-</span><br />
+                                  <strong>Indexador:</strong>
+                                  <span id="indexadorAtivoResultado">-</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aba Filtros Estatísticos -->
+            <div class="tab-pane fade" id="filtros" role="tabpanel">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-filter text-primary"></i>
+                    Filtros Estatísticos
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <form id="filtrosForm">
+                    <div class="form-group">
+                      <label for="taxasInput"
+                        >Taxas (separadas por vírgula)
+                        <span class="text-danger">*</span></label
+                      >
+                      <textarea
+                        class="form-control"
+                        id="taxasInput"
+                        name="taxasInput"
+                        rows="4"
+                        placeholder="Ex: 0.08, 0.09, 0.10, 0.11, 0.12"
+                        required
+                      ></textarea>
+                      <small class="form-text text-muted"
+                        >Insira as taxas separadas por vírgula para aplicar
+                        filtros estatísticos</small
+                      >
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-info btn-lg">
+                        <i class="fas fa-filter"></i>
+                        Aplicar Filtros
+                      </button>
+                    </div>
+                  </form>
+
+                  <!-- Área de Resultados Filtros -->
+                  <div
+                    id="filtrosResultados"
+                    class="mt-4"
+                    style="display: none"
+                  >
+                    <div class="card bg-light">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-chart-bar text-success"></i>
+                          Resultados dos Filtros Estatísticos
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="result-item">
+                              <label>Quantidade Original:</label>
+                              <div class="result-value" id="quantidadeOriginal">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="result-item">
+                              <label>Quantidade Filtrada:</label>
+                              <div class="result-value" id="quantidadeFiltrada">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="result-item">
+                              <label>Outliers Removidos:</label>
+                              <div class="result-value" id="outliersRemovidos">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row mt-3">
+                          <div class="col-md-6">
+                            <div class="result-item">
+                              <label>Taxas Originais:</label>
+                              <div class="result-list" id="taxasOriginais">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="result-item">
+                              <label>Taxas Filtradas:</label>
+                              <div class="result-list" id="taxasFiltradas">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aba Identificador de Ativos -->
+            <div class="tab-pane fade" id="identificador" role="tabpanel">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-search text-primary"></i>
+                    Identificador de Ativos
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <!-- Navegação por sub-abas -->
+                  <ul
+                    class="nav nav-pills nav-justified mb-4"
+                    id="identificadorSubTabs"
+                    role="tablist"
+                  >
+                    <li class="nav-item">
+                      <a
+                        class="nav-link active"
+                        id="ler-celula-tab"
+                        data-toggle="pill"
+                        href="#ler-celula"
+                        role="tab"
+                      >
+                        <i class="fas fa-crosshairs"></i> Ler Célula
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link"
+                        id="buscar-ativo-tab"
+                        data-toggle="pill"
+                        href="#buscar-ativo"
+                        role="tab"
+                      >
+                        <i class="fas fa-search"></i> Buscar Ativo
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link"
+                        id="listar-abas-tab"
+                        data-toggle="pill"
+                        href="#listar-abas"
+                        role="tab"
+                      >
+                        <i class="fas fa-list"></i> Listar Abas
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link"
+                        id="ler-coluna-tab"
+                        data-toggle="pill"
+                        href="#ler-coluna"
+                        role="tab"
+                      >
+                        <i class="fas fa-columns"></i> Ler Coluna
+                      </a>
+                    </li>
+                  </ul>
+
+                  <!-- Conteúdo das sub-abas -->
+                  <div class="tab-content" id="identificadorSubTabContent">
+                    <!-- Sub-aba Ler Célula -->
+                    <div
+                      class="tab-pane fade show active"
+                      id="ler-celula"
+                      role="tabpanel"
+                    >
+                      <form id="lerCelulaForm">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="filePath"
+                                >Caminho da Planilha
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="filePath"
+                                name="filePath"
+                                value="operacoes.xlsx"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="sheetName"
+                                >Nome da Aba
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="sheetName"
+                                name="sheetName"
+                                value="Características de CRI - LOGOS"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="cellAddress"
+                                >Endereço da Célula
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="cellAddress"
+                                name="cellAddress"
+                                placeholder="Ex: A1"
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-crosshairs"></i> Ler Célula
+                          </button>
+                        </div>
+                      </form>
+
+                      <!-- Resultado Ler Célula -->
+                      <div
+                        id="resultadoLerCelula"
+                        class="mt-4"
+                        style="display: none"
+                      >
+                        <div class="card bg-light">
+                          <div class="card-header">
+                            <h6 class="mb-0">Resultado da Leitura</h6>
+                          </div>
+                          <div class="card-body">
+                            <p>
+                              <strong>Valor:</strong>
+                              <span id="valorCelula">-</span>
+                            </p>
+                            <p>
+                              <strong>Tipo:</strong>
+                              <span id="tipoCelula">-</span>
+                            </p>
+                            <p>
+                              <strong>Timestamp:</strong>
+                              <span id="timestampCelula">-</span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Sub-aba Buscar Ativo -->
+                    <div
+                      class="tab-pane fade"
+                      id="buscar-ativo"
+                      role="tabpanel"
+                    >
+                      <form id="buscarAtivoForm">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="searchValue"
+                                >Código IF
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="searchValue"
+                                name="searchValue"
+                                placeholder="Ex: 14J0107228"
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-success">
+                            <i class="fas fa-search"></i> Buscar Ativo
+                          </button>
+                        </div>
+                      </form>
+
+                      <!-- Resultado Buscar Ativo -->
+                      <div
+                        id="resultadoBuscarAtivo"
+                        class="mt-4"
+                        style="display: none"
+                      >
+                        <div class="card bg-light">
+                          <div class="card-header">
+                            <h6 class="mb-0">Resultados da Busca</h6>
+                          </div>
+                          <div class="card-body" id="conteudoBuscarAtivo">
+                            <!-- Conteúdo será preenchido dinamicamente -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Sub-aba Listar Abas -->
+                    <div class="tab-pane fade" id="listar-abas" role="tabpanel">
+                      <form id="listarAbasForm">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="filePathAbas"
+                                >Caminho da Planilha
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="filePathAbas"
+                                name="filePathAbas"
+                                value="operacoes.xlsx"
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-info">
+                            <i class="fas fa-list"></i> Listar Abas
+                          </button>
+                        </div>
+                      </form>
+
+                      <!-- Resultado Listar Abas -->
+                      <div
+                        id="resultadoListarAbas"
+                        class="mt-4"
+                        style="display: none"
+                      >
+                        <div class="card bg-light">
+                          <div class="card-header">
+                            <h6 class="mb-0">Abas da Planilha</h6>
+                          </div>
+                          <div class="card-body" id="conteudoListarAbas">
+                            <!-- Conteúdo será preenchido dinamicamente -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Sub-aba Ler Coluna -->
+                    <div class="tab-pane fade" id="ler-coluna" role="tabpanel">
+                      <form id="lerColunaForm">
+                        <div class="row">
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="filePathColuna"
+                                >Caminho da Planilha
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="filePathColuna"
+                                name="filePathColuna"
+                                value="operacoes.xlsx"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label for="sheetNameColuna"
+                                >Nome da Aba
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="sheetNameColuna"
+                                name="sheetNameColuna"
+                                value="Características de CRI - LOGOS"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="form-group">
+                              <label for="columnLetter"
+                                >Coluna
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="columnLetter"
+                                name="columnLetter"
+                                placeholder="Ex: E"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="form-group">
+                              <label for="startRow">Linha Inicial</label>
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="startRow"
+                                name="startRow"
+                                value="1"
+                                min="1"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="form-group">
+                              <label for="endRow">Linha Final</label>
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="endRow"
+                                name="endRow"
+                                min="1"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-columns"></i> Ler Coluna
+                          </button>
+                        </div>
+                      </form>
+
+                      <!-- Resultado Ler Coluna -->
+                      <div
+                        id="resultadoLerColuna"
+                        class="mt-4"
+                        style="display: none"
+                      >
+                        <div class="card bg-light">
+                          <div class="card-header">
+                            <h6 class="mb-0">Valores da Coluna</h6>
+                          </div>
+                          <div class="card-body" id="conteudoLerColuna">
+                            <!-- Conteúdo será preenchido dinamicamente -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aba Cadastro de Ativos -->
+            <div class="tab-pane fade" id="cadastro" role="tabpanel">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-plus-circle text-primary"></i>
+                    Cadastro de Ativos
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <!-- Formulário de Cadastro -->
+                  <form id="cadastroAtivoForm">
+                    <!-- Seção 1: Informações Básicas -->
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-info-circle"></i> Informações Básicas
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="codigoIfCadastro"
+                                >Código IF
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="codigoIfCadastro"
+                                name="codigoIfCadastro"
+                                placeholder="Ex: 14J0107228"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="statusCadastro">Status</label>
+                              <select
+                                class="form-control"
+                                id="statusCadastro"
+                                name="statusCadastro"
+                              >
+                                <option value="">Selecione...</option>
+                                <option value="Ativo">Ativo</option>
+                                <option value="Inativo">Inativo</option>
+                                <option value="Vencido">Vencido</option>
+                                <option value="Resgatado">Resgatado</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="emissaoCadastro">Emissão</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="emissaoCadastro"
+                                name="emissaoCadastro"
+                                placeholder="Ex: 1ª Emissão"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="papelCadastro">Papel</label>
+                              <select
+                                class="form-control"
+                                id="papelCadastro"
+                                name="papelCadastro"
+                              >
+                                <option value="">Selecione...</option>
+                                <option value="CRI">CRI</option>
+                                <option value="CRA">CRA</option>
+                                <option value="Debênture">Debênture</option>
+                                <option value="FIDC">FIDC</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="serieCadastro">Série</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="serieCadastro"
+                                name="serieCadastro"
+                                placeholder="Ex: Única"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="nomeAtivoCadastro"
+                                >Operação - Apelido
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="nomeAtivoCadastro"
+                                name="nomeAtivoCadastro"
+                                placeholder="Nome do ativo"
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Seção 2: Agentes e Participantes -->
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-users"></i> Agentes e Participantes
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="emissorCadastro"
+                                >Emissor
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="emissorCadastro"
+                                name="emissorCadastro"
+                                placeholder="Nome do emissor"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="escrituradorCadastro"
+                                >Escriturador</label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="escrituradorCadastro"
+                                name="escrituradorCadastro"
+                                placeholder="Nome do escriturador"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="agenteFiduciarioCadastro"
+                                >Agente Fiduciário</label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="agenteFiduciarioCadastro"
+                                name="agenteFiduciarioCadastro"
+                                placeholder="Nome do agente fiduciário"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="coordenadorLiderCadastro"
+                                >Coordenador Líder</label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="coordenadorLiderCadastro"
+                                name="coordenadorLiderCadastro"
+                                placeholder="Nome do coordenador líder"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="cedenteCadastro">Cedente</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="cedenteCadastro"
+                                name="cedenteCadastro"
+                                placeholder="Nome do cedente"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="investidorCadastro">Investidor</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="investidorCadastro"
+                                name="investidorCadastro"
+                                placeholder="Tipo de investidor"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="estruturaCadastro">Estrutura</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="estruturaCadastro"
+                                name="estruturaCadastro"
+                                placeholder="Estrutura da operação"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Seção 3: Datas -->
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-calendar"></i> Datas
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="dataEmissaoCadastro"
+                                >Data de Emissão</label
+                              >
+                              <input
+                                type="date"
+                                class="form-control"
+                                id="dataEmissaoCadastro"
+                                name="dataEmissaoCadastro"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="dataVencimentoCadastro"
+                                >Data de Vencimento</label
+                              >
+                              <input
+                                type="date"
+                                class="form-control"
+                                id="dataVencimentoCadastro"
+                                name="dataVencimentoCadastro"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="dataFinalDistribuicaoCadastro"
+                                >Data Final de Distribuição</label
+                              >
+                              <input
+                                type="date"
+                                class="form-control"
+                                id="dataFinalDistribuicaoCadastro"
+                                name="dataFinalDistribuicaoCadastro"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="dataResgateAntecipadoCadastro"
+                                >Data de Resgate Antecipado</label
+                              >
+                              <input
+                                type="date"
+                                class="form-control"
+                                id="dataResgateAntecipadoCadastro"
+                                name="dataResgateAntecipadoCadastro"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="dataPrimeiraIntegralizacaoCadastro"
+                                >Data da 1ª Integralização</label
+                              >
+                              <input
+                                type="date"
+                                class="form-control"
+                                id="dataPrimeiraIntegralizacaoCadastro"
+                                name="dataPrimeiraIntegralizacaoCadastro"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Seção 4: Características Financeiras -->
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-dollar-sign"></i> Características
+                          Financeiras
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="puEmissaoCadastro">PU Emissão</label>
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="puEmissaoCadastro"
+                                name="puEmissaoCadastro"
+                                step="0.01"
+                                placeholder="1000000.00"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="taxaCadastro">Taxa (%)</label>
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="taxaCadastro"
+                                name="taxaCadastro"
+                                step="0.01"
+                                placeholder="Ex: 12.50"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="indexadorCadastro">Indexador</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="indexadorCadastro"
+                                name="indexadorCadastro"
+                                placeholder="Ex: IPCA+"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="agioCadastro">Ágio (%)</label>
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="agioCadastro"
+                                name="agioCadastro"
+                                step="0.01"
+                                placeholder="Ex: 5.00"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="taxaFlutanteCadastro"
+                                >% Taxa Flutuante</label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="taxaFlutanteCadastro"
+                                name="taxaFlutanteCadastro"
+                                step="0.01"
+                                placeholder="Ex: 2.50"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="taxaJurosPreSpreadCadastro"
+                                >Taxa de Juros Pré/Spread</label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="taxaJurosPreSpreadCadastro"
+                                name="taxaJurosPreSpreadCadastro"
+                                step="0.01"
+                                placeholder="Ex: 1.50"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Seção 5: Volumes e Quantidades -->
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-chart-bar"></i> Volumes e Quantidades
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="qtdEmitidaCadastro"
+                                >Qtd Emitida</label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="qtdEmitidaCadastro"
+                                name="qtdEmitidaCadastro"
+                                step="1"
+                                placeholder="Ex: 1000"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="volumeEmissaoCadastro"
+                                >Volume Emissão</label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="volumeEmissaoCadastro"
+                                name="volumeEmissaoCadastro"
+                                step="0.01"
+                                placeholder="Ex: 1000000.00"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="qtdIntegralizadaCadastro"
+                                >Qtd Integralizada</label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="qtdIntegralizadaCadastro"
+                                name="qtdIntegralizadaCadastro"
+                                step="1"
+                                placeholder="Ex: 1000"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="saldoDevedorCadastro"
+                                >Saldo Devedor</label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="saldoDevedorCadastro"
+                                name="saldoDevedorCadastro"
+                                step="0.01"
+                                placeholder="Ex: 950000.00"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="isinCadastro">ISIN</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="isinCadastro"
+                                name="isinCadastro"
+                                placeholder="Ex: BRXXXXXXXXXXX"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Seção 6: Características Operacionais -->
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-cogs"></i> Características
+                          Operacionais
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="tipoOfertaCadastro"
+                                >Tipo da Oferta</label
+                              >
+                              <select
+                                class="form-control"
+                                id="tipoOfertaCadastro"
+                                name="tipoOfertaCadastro"
+                              >
+                                <option value="">Selecione...</option>
+                                <option value="Pública">Pública</option>
+                                <option value="Privada">Privada</option>
+                                <option value="Restrita">Restrita</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="gestaoCadastro">Gestão</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="gestaoCadastro"
+                                name="gestaoCadastro"
+                                placeholder="Tipo de gestão"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label for="servicingCadastro">Servicing</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="servicingCadastro"
+                                name="servicingCadastro"
+                                placeholder="Empresa de servicing"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="pagamentoJurosCadastro"
+                                >Pagamento de Juros</label
+                              >
+                              <select
+                                class="form-control"
+                                id="pagamentoJurosCadastro"
+                                name="pagamentoJurosCadastro"
+                              >
+                                <option value="">Selecione...</option>
+                                <option value="Mensal">Mensal</option>
+                                <option value="Trimestral">Trimestral</option>
+                                <option value="Semestral">Semestral</option>
+                                <option value="Anual">Anual</option>
+                                <option value="No Vencimento">
+                                  No Vencimento
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="amortizacaoCadastro"
+                                >Amortização</label
+                              >
+                              <select
+                                class="form-control"
+                                id="amortizacaoCadastro"
+                                name="amortizacaoCadastro"
+                              >
+                                <option value="">Selecione...</option>
+                                <option value="Bullet">Bullet</option>
+                                <option value="SAC">SAC</option>
+                                <option value="Price">Price</option>
+                                <option value="Customizada">Customizada</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <label for="observacaoCadastro">Observação</label>
+                              <textarea
+                                class="form-control"
+                                id="observacaoCadastro"
+                                name="observacaoCadastro"
+                                rows="3"
+                                placeholder="Observações adicionais sobre o ativo"
+                              ></textarea>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-save"></i>
+                        Cadastrar Ativo
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-secondary btn-lg ml-2"
+                        id="limparFormulario"
+                      >
+                        <i class="fas fa-eraser"></i>
+                        Limpar
+                      </button>
+                    </div>
+                  </form>
+
+                  <!-- Status do Cadastro -->
+                  <div id="statusCadastro" class="mt-4" style="display: none">
+                    <div class="alert" id="alertCadastro">
+                      <div id="mensagemCadastro"></div>
+                    </div>
+                  </div>
+
+                  <!-- Lista de Ativos Cadastrados -->
+                  <div class="mt-5">
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-3"
+                    >
+                      <h6>
+                        <i class="fas fa-list text-primary"></i>
+                        Ativos Cadastrados
+                      </h6>
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        id="atualizarLista"
+                      >
+                        <i class="fas fa-sync-alt"></i>
+                        Atualizar Lista
+                      </button>
+                    </div>
+
+                    <div class="table-responsive">
+                      <table class="table table-striped table-hover">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th>Código IF</th>
+                            <th>Nome</th>
+                            <th>Emissor</th>
+                            <th>PU Emissão</th>
+                            <th>Taxa (%)</th>
+                            <th>Indexador</th>
+                            <th>Data Cadastro</th>
+                            <th>Ações</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tabelaAtivos">
+                          <tr>
+                            <td colspan="8" class="text-center text-muted">
+                              <i class="fas fa-spinner fa-spin"></i>
+                              Carregando ativos...
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <button id="btnCarregarAtivos" class="btn btn-primary">
+                      <i class="fas fa-upload"></i> Carregar Ativos da Planilha
+                    </button>
+                  </div>
+                  <table
+                    id="tabelaAtivos"
+                    class="table table-striped table-bordered"
+                  >
+                    <thead class="thead-dark">
+                      <tr>
+                        <th>#</th>
+                        <th>Código IF</th>
+                        <th>Nome</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Os ativos serão inseridos aqui via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aba Calculadora de Juros -->
+            <div class="tab-pane fade" id="juros" role="tabpanel">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-money-bill-wave text-primary"></i>
+                    Calculadora de Juros (Dia 25 de cada mês)
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <!-- Abas internas para Juros -->
+                  <ul
+                    class="nav nav-tabs mb-3"
+                    id="jurosInternalTabs"
+                    role="tablist"
+                  >
+                    <li class="nav-item">
+                      <a
+                        class="nav-link active"
+                        id="juros-por-ativo-tab"
+                        data-toggle="tab"
+                        href="#juros-por-ativo"
+                        role="tab"
+                      >
+                        <i class="fas fa-file-invoice-dollar"></i> Juros por
+                        Ativo
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link"
+                        id="amortizacao-tab"
+                        data-toggle="tab"
+                        href="#amortizacao"
+                        role="tab"
+                      >
+                        <i class="fas fa-calculator"></i> Calculadora de
+                        Amortização
+                      </a>
+                    </li>
+                  </ul>
+
+                  <div class="tab-content" id="jurosInternalContent">
+                    <!-- Aba 1: Juros por Ativo -->
+                    <div
+                      class="tab-pane fade show active"
+                      id="juros-por-ativo"
+                      role="tabpanel"
+                    >
+                      <form id="jurosForm">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="codigoIfJuros"
+                                >Código IF do Ativo
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="codigoIfJuros"
+                                name="codigoIfJuros"
+                                placeholder="Ex: 22F1187231"
+                                required
+                              />
+                              <small class="form-text text-muted"
+                                >Digite o código IF do ativo para calcular os
+                                juros
+                              </small>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="dataJuros"
+                                >Data (opcional)
+                                <span class="text-muted"
+                                  >(padrão: dia 25 do mês atual)</span
+                                ></label
+                              >
+                              <input
+                                type="date"
+                                class="form-control"
+                                id="dataJuros"
+                                name="dataJuros"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calculator"></i>
+                            Calcular Juros
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-info btn-lg ml-2"
+                            id="calcularTodosJuros"
+                          >
+                            <i class="fas fa-list"></i>
+                            Calcular Todos
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                    <!-- Aba 2: Calculadora de Amortização -->
+                    <div class="tab-pane fade" id="amortizacao" role="tabpanel">
+                      <form id="amortizacaoForm">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="valorPrincipalAmort"
+                                >Valor Principal (G)
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="number"
+                                class="form-control"
+                                id="valorPrincipalAmort"
+                                name="valorPrincipalAmort"
+                                placeholder="Ex: 1000.00"
+                                step="0.01"
+                                required
+                              />
+                              <small class="form-text text-muted"
+                                >Digite o valor principal para multiplicar pela
+                                porcentagem
+                              </small>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="chaveAmort"
+                                >Chave/Data (D)
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="chaveAmort"
+                                name="chaveAmort"
+                                placeholder="Ex: 2023-07-25 00:00:00"
+                                required
+                              />
+                              <small class="form-text text-muted"
+                                >Data do dia 25 (formato: YYYY-MM-DD HH:MM:SS)
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-calculator"></i>
+                            Calcular Amortização
+                          </button>
+                        </div>
+                      </form>
+
+                      <!-- Área de Resultados Amortização -->
+                      <div
+                        id="amortizacaoResultados"
+                        class="mt-4"
+                        style="display: none"
+                      >
+                        <div class="card bg-light">
+                          <div class="card-header">
+                            <h6 class="mb-0">
+                              <i class="fas fa-check-circle text-success"></i>
+                              Resultado da Amortização
+                            </h6>
+                          </div>
+                          <div class="card-body">
+                            <div class="row">
+                              <div class="col-md-3">
+                                <div class="result-item">
+                                  <label>Valor Principal:</label>
+                                  <div
+                                    class="result-value"
+                                    id="valorPrincipalResultado"
+                                  >
+                                    -
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-3">
+                                <div class="result-item">
+                                  <label>Chave/Data:</label>
+                                  <div class="result-value" id="chaveResultado">
+                                    -
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-3">
+                                <div class="result-item">
+                                  <label>Porcentagem:</label>
+                                  <div
+                                    class="result-value"
+                                    id="porcentagemAmortResultado"
+                                  >
+                                    -
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-3">
+                                <div class="result-item">
+                                  <label>Resultado (Truncado):</label>
+                                  <div
+                                    class="result-value text-success"
+                                    id="resultadoAmortizacao"
+                                  >
+                                    -
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row mt-3">
+                              <div class="col-md-12">
+                                <div class="result-item">
+                                  <label>Data do Cálculo:</label>
+                                  <div
+                                    class="result-value"
+                                    id="dataCalculoAmortResultado"
+                                  >
+                                    -
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Área de Resultados Juros -->
+                  <div id="jurosResultados" class="mt-4" style="display: none">
+                    <div class="card bg-light">
+                      <div class="card-header">
+                        <h6 class="mb-0">
+                          <i class="fas fa-chart-bar text-success"></i>
+                          Resultados do Cálculo de Juros
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-3">
+                            <div class="result-item">
+                              <label>Código IF:</label>
+                              <div class="result-value" id="codigoIfResultado">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="result-item">
+                              <label>Data (Dia 25):</label>
+                              <div class="result-value" id="dataResultado">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="result-item">
+                              <label>VNA:</label>
+                              <div class="result-value" id="vnaResultado">
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="result-item">
+                              <label>Porcentagem:</label>
+                              <div
+                                class="result-value"
+                                id="porcentagemResultado"
+                              >
+                                -
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row mt-3">
+                          <div class="col-md-6">
+                            <div class="result-item">
+                              <label>Juros Calculado:</label>
+                              <div
+                                class="result-value text-success"
+                                id="jurosCalculadoResultado"
+                              >
+                                -
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="result-item">
+                              <label>Data do Cálculo:</label>
+                              <div
+                                class="result-value"
+                                id="dataCalculoJurosResultado"
+                              >
+                                -
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tabela de Histórico de Juros -->
+                  <div class="mt-5">
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-3"
+                    >
+                      <h6>
+                        <i class="fas fa-history text-primary"></i>
+                        Histórico de Cálculos
+                      </h6>
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        id="atualizarHistoricoJuros"
+                      >
+                        <i class="fas fa-sync-alt"></i>
+                        Atualizar
+                      </button>
+                    </div>
+
+                    <div class="table-responsive">
+                      <table class="table table-striped table-hover">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th>Código IF</th>
+                            <th>Data (Dia 25)</th>
+                            <th>VNA</th>
+                            <th>Porcentagem</th>
+                            <th>Juros</th>
+                            <th>Data do Cálculo</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tabelaHistoricoJuros">
+                          <tr>
+                            <td colspan="6" class="text-center text-muted">
+                              <i class="fas fa-spinner fa-spin"></i>
+                              Carregando histórico...
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/calculadora.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/calculadora_juros.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/amortizacao.js') }}"></script>
+  </body>
+</html>

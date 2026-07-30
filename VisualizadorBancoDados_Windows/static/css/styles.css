@@ -1,0 +1,297 @@
+/* Estilos customizados para a Calculadora PU/IPCA */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header-section {
+    background: linear-gradient(135deg, #092cc5 0%, #2706e0 100%);
+    color: white;
+    padding: 2rem 0;
+    margin: -15px -15px 2rem -15px;
+    border-radius: 0 0 15px 15px;
+}
+
+.header-section h1 {
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+}
+
+.header-section p {
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+
+/* Navegação por abas */
+.nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 1rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.nav-tabs .nav-link.active {
+    color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+    border-bottom: 2px solid #007bff;
+}
+
+/* Cards */
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* Formulários */
+.form-group label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Botões */
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+    transform: translateY(-1px);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    border: none;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+    transform: translateY(-1px);
+    color: #212529;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    border: none;
+}
+
+.btn-info:hover {
+    background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+    transform: translateY(-1px);
+}
+
+/* Área de resultados */
+.result-item {
+    margin-bottom: 1rem;
+}
+
+.result-item label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.result-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #28a745;
+    background-color: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border-left: 4px solid #28a745;
+}
+
+.result-list {
+    font-size: 0.875rem;
+    color: #495057;
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    border-left: 4px solid #17a2b8;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+/* Fluxos de pagamento */
+.fluxo-item {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+}
+
+.fluxo-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Status e alertas */
+.alert {
+    border-radius: 0.5rem;
+    border: none;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+/* Loading spinner */
+#loadingSpinner {
+    padding: 2rem;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .header-section {
+        padding: 1.5rem 0;
+    }
+    
+    .header-section h1 {
+        font-size: 1.75rem;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .result-value {
+        font-size: 1.1rem;
+    }
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Campos obrigatórios */
+.form-control:required:invalid {
+    border-color: #dc3545;
+}
+
+.form-control:required:valid {
+    border-color: #28a745;
+}
+
+/* Hover effects */
+.card-header:hover {
+    background-color: #e9ecef;
+    transition: background-color 0.15s ease-in-out;
+}
+
+/* Scrollbar customizada */
+.result-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.result-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.result-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.result-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
