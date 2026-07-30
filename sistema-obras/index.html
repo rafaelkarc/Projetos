@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Acompanhamento de Obras</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-building"></i> Sistema de Obras</h2>
+                <p>Versão 3.0 - Relatórios Mensais</p>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </a></li>
+                <li><a href="#obras" class="nav-link" data-section="obras">
+                    <i class="fas fa-hammer"></i> Obras
+                </a></li>
+                <li><a href="#responsaveis" class="nav-link" data-section="responsaveis">
+                    <i class="fas fa-users"></i> Responsáveis
+                </a></li>
+                <li><a href="#relatorios-mensais" class="nav-link" data-section="relatorios-mensais">
+                    <i class="fas fa-calendar-alt"></i> Relatórios Mensais
+                </a></li>
+                <li><a href="#relatorios" class="nav-link" data-section="relatorios">
+                    <i class="fas fa-file-pdf"></i> Relatórios PDF
+                </a></li>
+            </ul>
+            <div class="api-status">
+                <div id="status-indicator" class="status-offline">
+                    <i class="fas fa-circle"></i>
+                    <span>API Offline</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section active">
+                <div class="section-header">
+                    <h1><i class="fas fa-chart-pie"></i> Dashboard</h1>
+                    <p>Visão geral do sistema de acompanhamento de obras</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-obras">0</h3>
+                            <p>Total de Obras</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="obras-andamento">0</h3>
+                            <p>Em Andamento</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="obras-concluidas">0</h3>
+                            <p>Concluídas</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-responsaveis">0</h3>
+                            <p>Responsáveis</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="obras-atrasadas">0</h3>
+                            <p>Atrasadas</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon teal">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="valor-total">R$ 0,00</h3>
+                            <p>Valor Orçado</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon indigo">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="valor-gasto">R$ 0,00</h3>
+                            <p>Valor Gasto</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pink">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="evolucao-media">0%</h3>
+                            <p>Evolução Média</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-section">
+                    <h2>Ações Rápidas</h2>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="showSection('obras')">
+                            <i class="fas fa-plus"></i> Nova Obra
+                        </button>
+                        <button class="btn btn-secondary" onclick="showSection('responsaveis')">
+                            <i class="fas fa-user-plus"></i> Novo Responsável
+                        </button>
+                        <button class="btn btn-info" onclick="showSection('relatorios-mensais')">
+                            <i class="fas fa-calendar-plus"></i> Novo Relatório Mensal
+                        </button>
+                        <button class="btn btn-success" onclick="gerarRelatorioGeral()">
+                            <i class="fas fa-file-pdf"></i> Relatório Geral
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Obras Section -->
+            <section id="obras-section" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-hammer"></i> Gerenciar Obras</h1>
+                    <button class="btn btn-primary" onclick="showModal('obra-modal')">
+                        <i class="fas fa-plus"></i> Nova Obra
+                    </button>
+                </div>
+
+                <div class="filters">
+                    <select id="filtro-status" onchange="filtrarObras()">
+                        <option value="">Todos os Status</option>
+                        <option value="Em Planejamento">Em Planejamento</option>
+                        <option value="Em Andamento">Em Andamento</option>
+                        <option value="Concluída">Concluída</option>
+                        <option value="Pausada">Pausada</option>
+                    </select>
+                    <select id="filtro-responsavel" onchange="filtrarObras()">
+                        <option value="">Todos os Responsáveis</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nº Projeto</th>
+                                <th>Nome</th>
+                                <th>Status</th>
+                                <th>Responsável</th>
+                                <th>Data Início</th>
+                                <th>Evolução</th>
+                                <th>Orçamento</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="obras-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Responsáveis Section -->
+            <section id="responsaveis-section" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-users"></i> Gerenciar Responsáveis</h1>
+                    <button class="btn btn-primary" onclick="showModal('responsavel-modal')">
+                        <i class="fas fa-user-plus"></i> Novo Responsável
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Função</th>
+                                <th>Contato</th>
+                                <th>Email</th>
+                                <th>CPF</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="responsaveis-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Relatórios Mensais Section -->
+            <section id="relatorios-mensais-section" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-calendar-alt"></i> Relatórios Mensais</h1>
+                    <button class="btn btn-primary" onclick="showModal('relatorio-mensal-modal')">
+                        <i class="fas fa-plus"></i> Novo Relatório Mensal
+                    </button>
+                </div>
+
+                <div class="filters">
+                    <select id="filtro-obra-relatorio" onchange="filtrarRelatoriosMensais()">
+                        <option value="">Todas as Obras</option>
+                    </select>
+                    <input type="month" id="filtro-mes-relatorio" onchange="filtrarRelatoriosMensais()">
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Obra</th>
+                                <th>Data Relatório</th>
+                                <th>Valor Gasto</th>
+                                <th>Valor Comprometido</th>
+                                <th>Evolução</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="relatorios-mensais-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Relatórios Section -->
+            <section id="relatorios-section" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-file-pdf"></i> Relatórios PDF</h1>
+                    <p>Gere relatórios detalhados das obras</p>
+                </div>
+
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3>Relatório Geral</h3>
+                        <p>Relatório completo com todas as obras, estatísticas gerais e análise por responsável</p>
+                        <button class="btn btn-primary" onclick="gerarRelatorioGeral()">
+                            <i class="fas fa-download"></i> Gerar Relatório
+                        </button>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h3>Relatório por Obra</h3>
+                        <p>Relatório detalhado de uma obra específica com histórico de relatórios mensais</p>
+                        <select id="obra-relatorio">
+                            <option value="">Selecione uma obra</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="gerarRelatorioObra()">
+                            <i class="fas fa-download"></i> Gerar Relatório
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Modal Obra -->
+    <div id="obra-modal" class="modal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h2 id="obra-modal-title">Nova Obra</h2>
+                <span class="close" onclick="hideModal('obra-modal')">&times;</span>
+            </div>
+            <form id="form-obra">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="numero-projeto-obra">Número do Projeto</label>
+                        <input type="text" id="numero-projeto-obra">
+                    </div>
+                    <div class="form-group">
+                        <label for="nome-obra">Nome da Obra *</label>
+                        <input type="text" id="nome-obra" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="status-obra">Status</label>
+                        <select id="status-obra">
+                            <option value="Em Planejamento">Em Planejamento</option>
+                            <option value="Em Andamento">Em Andamento</option>
+                            <option value="Pausada">Pausada</option>
+                            <option value="Concluída">Concluída</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="responsavel-obra">Responsável *</label>
+                        <select id="responsavel-obra" required>
+                            <option value="">Selecione um responsável</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="descricao-obra">Descrição</label>
+                        <textarea id="descricao-obra" rows="3"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="endereco-obra">Endereço</label>
+                        <input type="text" id="endereco-obra">
+                    </div>
+                    <div class="form-group">
+                        <label for="data-inicio-obra">Data de Início *</label>
+                        <input type="date" id="data-inicio-obra" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="data-inicio-real-obra">Data Início Real da Construção</label>
+                        <input type="date" id="data-inicio-real-obra">
+                    </div>
+                    <div class="form-group">
+                        <label for="data-prevista-obra">Data Prevista de Fim</label>
+                        <input type="date" id="data-prevista-obra">
+                    </div>
+                    <div class="form-group">
+                        <label for="data-termino-dedicacao-obra">Data de Término e Dedicação</label>
+                        <input type="date" id="data-termino-dedicacao-obra">
+                    </div>
+                    <div class="form-group">
+                        <label for="orcamento-obra">Orçamento (R$)</label>
+                        <input type="number" id="orcamento-obra" step="0.01" min="0">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('obra-modal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Responsável -->
+    <div id="responsavel-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="responsavel-modal-title">Novo Responsável</h2>
+                <span class="close" onclick="hideModal('responsavel-modal')">&times;</span>
+            </div>
+            <form id="form-responsavel">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nome-responsavel">Nome *</label>
+                        <input type="text" id="nome-responsavel" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="funcao-responsavel">Função</label>
+                        <input type="text" id="funcao-responsavel">
+                    </div>
+                    <div class="form-group">
+                        <label for="contato-responsavel">Contato</label>
+                        <input type="text" id="contato-responsavel">
+                    </div>
+                    <div class="form-group">
+                        <label for="email-responsavel">Email</label>
+                        <input type="email" id="email-responsavel">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="cpf-responsavel">CPF</label>
+                        <input type="text" id="cpf-responsavel" maxlength="14">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('responsavel-modal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Relatório Mensal -->
+    <div id="relatorio-mensal-modal" class="modal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h2 id="relatorio-mensal-modal-title">Novo Relatório Mensal</h2>
+                <span class="close" onclick="hideModal('relatorio-mensal-modal')">&times;</span>
+            </div>
+            <form id="form-relatorio-mensal">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="obra-relatorio-mensal">Obra *</label>
+                        <select id="obra-relatorio-mensal" required>
+                            <option value="">Selecione uma obra</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="data-relatorio-mensal">Data do Relatório (Último dia do mês) *</label>
+                        <input type="date" id="data-relatorio-mensal" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="valor-gasto-relatorio">Valor Gasto (R$)</label>
+                        <input type="number" id="valor-gasto-relatorio" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="valor-comprometido-relatorio">Valor Comprometido (R$)</label>
+                        <input type="number" id="valor-comprometido-relatorio" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="evolucao-obra-relatorio">Evolução da Obra (%)</label>
+                        <input type="number" id="evolucao-obra-relatorio" step="0.1" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="data-inicio-seguro-relatorio">Data do Início do Seguro</label>
+                        <input type="date" id="data-inicio-seguro-relatorio">
+                    </div>
+                    <div class="form-group">
+                        <label for="data-vencimento-seguro-relatorio">Data do Vencimento do Seguro</label>
+                        <input type="date" id="data-vencimento-seguro-relatorio">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="comentarios-relatorio">Comentários - Serviços Realizados no Período</label>
+                        <textarea id="comentarios-relatorio" rows="4" placeholder="Descreva os serviços realizados no período..."></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="relatos-lideranca-relatorio">Relatos da Liderança - Visitas e Vistorias</label>
+                        <textarea id="relatos-lideranca-relatorio" rows="4" placeholder="Relatos de visitas e vistorias da liderança..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="foto1-url-relatorio">URL da Foto 1</label>
+                        <input type="url" id="foto1-url-relatorio" placeholder="https://exemplo.com/foto1.jpg">
+                    </div>
+                    <div class="form-group">
+                        <label for="foto2-url-relatorio">URL da Foto 2</label>
+                        <input type="url" id="foto2-url-relatorio" placeholder="https://exemplo.com/foto2.jpg">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('relatorio-mensal-modal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Carregando...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
